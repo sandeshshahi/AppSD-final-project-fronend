@@ -1,0 +1,37 @@
+# --- 1. THE FRONTEND DEPLOYMENT ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1 # For local testing, 1 replica is enough
+  selector:
+    matchLabels:
+      app: ads-dental-frontend
+  template:
+    metadata:
+      labels:
+        app: ads-dental-frontend
+    spec:
+      containers:
+        - name: frontend
+          # 🚀 Use the image you just pushed to Docker Hub
+          image: sandesh4366/ads-dental-frontend:v1
+          ports:
+            - containerPort: 80 # Nginx default port
+          imagePullPolicy: Always
+
+---
+# --- THE FRONTEND SERVICE (The Entry Point) ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ads-dental-frontend-service
+spec:
+  type: NodePort
+  selector:
+    app: ads-dental-frontend
+  ports:
+    - port: 3000 # The port you'll use in the browser
+      targetPort: 80 # Points to Nginx inside the container
+      nodePort: 30001 # Fixed port for easier local access
